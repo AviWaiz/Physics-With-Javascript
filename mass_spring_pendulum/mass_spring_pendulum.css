@@ -1,0 +1,36 @@
+  body {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;;
+  }
+  .sidebar {
+    background: #fafafa;
+    float: left;
+    font-family: Helvetica, Arial, sans-serif;
+    min-width: 200px;
+    height: 100%;
+    margin: 0;
+    padding: 10px 5px;
+
+    label {
+      margin: 10px 0 5px 10px;
+      display: block;
+    }
+    input {
+      margin: 10px 0 5px 10px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+  #set_variables_form {
+    display: flex;
+    flex-direction: column;
+  }
+  .phys-canvas{
+    float: left;
+  }
+  .submit-btn{
+    width: 80%;
+    padding: 5px;
+    text-align: center;
+  }

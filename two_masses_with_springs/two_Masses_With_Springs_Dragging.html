@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Coupled Driven Damped Spring Mass System </title>
+        <style>
+        body {
+            font-family:Helvetica, Arial, sans-serif;
+            font-size:12px;
+        }
+        canvas {
+            display:block;
+            margin:20px auto;
+            width:800px;
+            height:200px;
+            border:1px solid #333;
+        }
+        .controls {
+            width:400px;
+            margin:10px auto;
+        }
+        .controls > div {
+            border-bottom:1px solid #EEE;
+            padding:5px 0;
+        }
+        .controls label {
+            width:200px;
+            display:inline-block;
+        }
+        .controls input {
+            vertical-align:middle;
+        }
+        </style>
+        <script>
+/* Spring stiffness, in kg / s^2 */
+var k1 = -20;
+var spring_length1 = 180;
+var k2 = -20;
+var spring_length2 = 180;
+
+/* Damping constant, in kg / s */
+var b1 = -1;
+var b2 = -1;
+
+/* Block position and velocity. */
+var block1 = {x: 90, v: 0, mass: 0.5};
+var block2 = {x: 180, v: 0, mass: 0.5};
+var wall  = {x: 30,  lx: 30, v: 0, t: 0, frequency: 0};
+
+const frameRate  = 1 / 60;
+const frameDelay = frameRate * 1000;
+
+var canvas;
+var ctx;
+const width  = 800;
+const height = 200;
+
+
+const loop = () => {
+
+    /* Move the wall. */
+    wall.t += frameRate;
+    wall.lx = wall.x;
+    wall.x = 30 + 30 * Math.sin(2 * Math.PI * wall.frequency * wall.t);
+    wall.v = (wall.x - wall.lx) / frameRate;
+
+
+    /* Move the block. */
+
+    if ( ! mouse.isDown )
+    {
+        let F_spring1 = k1 * ( (block1.x - wall.x) - spring_length1 ) - k2 * ((block2.x - block1.x) - spring_length2) ;
+        let F_damper1 = b1 * ( block1.v);
+        let F_spring2 = k2 * ( (block2.x - block1.x) - spring_length2 );
+        let F_damper2 = b2 * ( block2.v );
+        let a1 = ( F_spring1 + F_damper1  ) / block1.mass;
+        let a2 = ( F_spring2 + F_damper2 ) / block2.mass;
+        block1.x += block1.v * frameRate + (a1 * (frameRate ** 2)) / 2;
+        block2.x += block2.v * frameRate +(block2.v * (frameRate ** 2)) / 2;
+        block1.v += a1 * frameRate;
+        block2.v += a2 * frameRate;
+
+    }
+
+    /* Drawing */
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.save();
+
+    for (x1 = wall.x; x1 < block1.x; x1 += 20)
+    {
+        ctx.strokeStyle = 'blue';
+        ctx.beginPath();
+        ctx.moveTo(x1, height / 2 - 10);
+        ctx.lineTo(x1 + 10, height / 2);
+        ctx.lineTo(x1 + 20, height / 2 - 10);
+        ctx.stroke();
+        ctx.closePath();
+
+    }
+    for (x2 = block1.x; x2 < block2.x; x2 += 20)
+    {
+        ctx.strokeStyle = 'blue';
+        ctx.beginPath();
+        ctx.moveTo(x2, height / 2 - 10);
+        ctx.lineTo(x2 + 10, height / 2);
+        ctx.lineTo(x2 + 20, height / 2 - 10);
+        ctx.stroke();
+        ctx.closePath();
+
+    }
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillRect(0, 0, wall.x, height);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(block1.x, height - (height / 2 + 25), 50, 50);
+    ctx.fillStyle = 'red';
+    ctx.fillRect(block2.x , height - (height / 2 + 25), 50, 50);
+
+    ctx.restore();
+
+
+};
+
+const setup = () => {
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+
+    canvas.onmousemove = getMousePosition;
+
+    canvas.onmousedown = (e) => {
+        if (e.which == 1) {
+            getMousePosition(e);
+            mouse.isDown = true;
+        }
+    };
+
+    canvas.onmouseup = (e) => {
+        if (e.which == 1) {
+            mouse.isDown = false;
+        }
+    };
+
+    document.getElementById('k1_slider').onchange = function() {
+        this.innerHTML = this.value;
+        k1 = -1 * parseInt(this.value);
+        document.getElementById('k1_slider_label').innerHTML = k1;
+    };
+
+    document.getElementById('k2_slider').onchange = function() {
+        this.innerHTML = this.value;
+        k2 = -1 * parseInt(this.value);
+        document.getElementById('k2_slider_label').innerHTML = k2;
+    };
+
+    document.getElementById('b1_slider').onchange = function() {
+        this.innerHTML = this.value;
+        b1 = -1 * parseFloat(this.value);
+        document.getElementById('b1_slider_label').innerHTML = b1;
+    };
+
+    document.getElementById('b2_slider').onchange = function() {
+        this.innerHTML = this.value;
+        b2 = -1 * parseFloat(this.value);
+        document.getElementById('b2_slider_label').innerHTML = b2;
+    };
+
+    document.getElementById('f_slider').onchange = function() {
+        this.innerHTML = this.value;
+        wall.frequency = parseFloat(this.value);
+        document.getElementById('f_slider_label').innerHTML = wall.frequency;
+    };
+
+    document.getElementById('m2_slider').onchange = function() {
+        this.innerHTML = this.value;
+        block1.mass = parseFloat(this.value);
+        document.getElementById('m2_slider_label').innerHTML = block2.mass;
+    };
+
+    setInterval(loop, frameDelay);
+};
+
+let mouse = {x: 0, y: 0, isDown: false};
+
+const getMousePosition = (e) => {
+    mouse.x = e.pageX - canvas.offsetLeft;
+    if (mouse.isDown){
+      if (Math.abs(block1.x - mouse.x) <= Math.abs(block2.x - mouse.x)) {
+        block1.x = mouse.x - 25;
+      } else if ( Math.abs(block1.x - mouse.x) > Math.abs(block2.x - mouse.x) ) {
+        block2.x = mouse.x - 25;
+      }
+    }
+};
+
+
+window.onload = setup;
+
+</script>
+    </head>
+    <body>
+        <canvas id="canvas" width=800 height=200></canvas>
+        <div class="controls">
+            <div>
+                <label>Stiffness1 (<span id="k1_slider_label">-20</span> kg / s<sup>2</sup>)</label>
+                <input id="k1_slider" type="range" min=1 max=10 value=5></input>
+            </div>
+            <div>
+                <label>Stiffness2 (<span id="k2_slider_label">-20</span> kg / s<sup>2</sup>)</label>
+                <input id="k2_slider" type="range" min=1 max=10 value=5></input>
+            </div>
+            <div>
+                <label>Damping1 (<span id="b1_slider_label">-3</span> kg / s)</label>
+                <input id="b1_slider" type="range" min=1 max=5 value=2 step=0.1></input>
+            </div>
+            <div>
+                <label>Damping2 (<span id="b2_slider_label">-3</span> kg / s)</label>
+                <input id="b2_slider" type="range" min=1 max=5 value=2 step=0.1></input>
+            </div>
+            <div>
+                <label>Frequency (<span id="f_slider_label">0</span>) Hz</label>
+                <input id="f_slider" type="range" min=0 max=10 value=0 step=0.1></input>
+            </div>
+            <div>
+                <label>Mass1 (<span id="m1_slider_label">0.5</span>) kg</label>
+                <input id="m1_slider" type="range" min=0.1 max=10 value=10 step=0.1></input>
+            </div>
+            <div>
+                <label>Mass2 (<span id="m2_slider_label">0.5</span>) kg</label>
+                <input id="m2_slider" type="range" min=0.1 max=10 value=10 step=0.1></input>
+            </div>
+
+        </div>
+
+    </body>
+</html>

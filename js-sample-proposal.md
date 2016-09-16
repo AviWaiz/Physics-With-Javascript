@@ -15,13 +15,12 @@ This simulation will incorporate several classical mechanics models. They are ou
 
 With Physics simulations , users will be able to:
 
-- [ ] interact with classical mechanics problems with dragging and dropping objects.
 - [ ] change properties of the model through sliders
 
 
 In addition, this project will include:
 
-- [ ] An About modal describing the physics of each problem
+- [ ] An about page describing the physics of each problem
 - [ ] A production Readme
 
 ### Wireframes

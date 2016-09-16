@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Physics: Spring Pendulum in JS</title>
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="spring_pendulum.css" media="screen">
+  </head>
+  <body>
+    <div class="sidebar">
+      <form id="set_variables_form">
+        <label for="mass1">Mass1:</label>
+        <input id="mass1" max="50" min="1" type="range" value="30">/</input>
+        <label for="Theta1">Theta1 (in deg):</label>
+        <input id="Theta1" max="180" min="0" type="range" value="50">/</input>
+        <label for="r">r:</label>
+        <input id="r" max="175" min="150" type="range" value="150.0">/</input>
+        <label for="k1">k1:</label>
+        <input id="k1" max="10" min="1" type="range" value="10">/</input>
+        <input class="submit-btn" type="submit" value="Start Simulation">/</input>
+      </form>
+    </div>
+    <canvas class="phys-canvas" height="1000" id="myCanvas" width="1000"></canvas>
+    <script src="./spring_pendulum.js" type="text/javascript"></script>
+  </body>
+</html>
