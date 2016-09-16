@@ -1,3 +1,4 @@
+
 $('#set_variables_form').submit(function (e) {
   e.preventDefault();
   console.log($('#mass1').val());
