@@ -108,5 +108,5 @@ function run(){
   context.clearRect(0, 0, canvas.width, canvas.height);
   init = setInterval(function(){
     animate(myCircle1, myCircle2 , myLine1, myLine2, canvas, context);
-  }, 0.1);
+  }, 0.01);
 }
